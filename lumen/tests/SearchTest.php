@@ -12,10 +12,18 @@ class SearchTest extends TestCase
      */
     public function testSearch()
     {
-        $this->get('/search');
-
-        $this->assertEquals(
-            $this->app->version(), $this->response->getContent()
-        );
+        $Request['HotelName'] ='Hotel' ;
+        $Request['Destination'] ='cairo' ;
+        $Request['Price']['from'] ='50' ;
+        $Request['Price ']['to'] ='200' ;
+        //
+        $Request['Date']['from'] ='11-10-2020' ;
+        $Request['Date']['to'] ='12-10-2020' ;
+        $Request['Sort'] = 'Hotel Name' ; 
+        $this->json('get', '/search', $Request)
+             ->seeJson([
+                'created' => true,
+             ]);
+        
     }
 }

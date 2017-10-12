@@ -47,7 +47,8 @@ class SearchController extends Controller {
      */
     private function SearchInArray($Data, $serch) {
         $valedHotel = array();
-
+        $hotelName = array();
+        $Price = array ();
         foreach ($Data->hotels as $hotel) {
 
             if (isset($serch->HotelName) && is_string($serch->HotelName)) {
@@ -85,20 +86,100 @@ class SearchController extends Controller {
                     continue;
                 }
             }
+           if(isset($serch->Sort) and $serch->Sort == 'Hotel Name')
+           {
+               $hotelName[] = $hotel->name ;
+            
+            }elseif(isset($serch->Sort) and $serch->Sort == 'Price')
+           {
+                $Price[] = $hotel->price ;
+           }
+           
 
             $valedHotel[] = $hotel;
         }
 
-        return response()->json($valedHotel);
+        if(isset($serch->Sort) and $serch->Sort == 'Hotel Name')
+            {
+           
+               $valedHotel = $this->SortByName($valedHotel ,$hotelName);
+            
+            }elseif(isset($serch->Sort) and $serch->Sort == 'Price')
+           {
+                $valedHotel = $this->SortByPrice($valedHotel ,$Price);
+           }
+          
+                return response()->json($valedHotel);
+           
+        //return response()->json($valedHotel);
+    }
+    
+    /**
+
+     * to sort hotels by hotals name 
+     * @param type $Data hotels data 
+     * @param type $HotelName array of hotels name
+     * @return array of Data sorted      /
+     *  @author Mahmoud Azmi <makoamin@gmail.com> 
+     */
+    private function SortByName($Data  , $HotelName)
+    {
+      
+        sort($HotelName) ;
+      
+        $SortHotel= array () ;
+          
+        foreach ($HotelName as $name)
+        {
+            foreach ($Data as $hotel )
+            {
+                
+                if($hotel->name == $name){
+                    $SortHotel[] = $hotel ;
+                }
+            }
+        }
+       
+        return $SortHotel ;
+    }
+    
+    
+     /**
+
+      *  to sort by price 
+      * @param type $Data hotels data 
+      * @param type $Price price of hotel 
+      * @return type  array of Data sorted
+      * @author Mahmoud Azmi <makoamin@gmail.com> 
+      */
+    private function SortByPrice($Data  , $Price)
+    {
+   sort($Price) ;
+        $SortHotel= array () ;
+        foreach ($Price as $pr)
+        {
+            foreach ($Data as $hotel )
+            {
+                if($hotel->price == $pr){
+                    $SortHotel[] = $hotel ;
+                }
+            }
+        }
+        
+        return $SortHotel ;
     }
 
     /**
 
-     * @return  array of date  
+     * @return  array of date 
+     * @author Mahmoud Azmi <makoamin@gmail.com>  
      */
     private function getArray() {
         $JsonDate = file_get_contents($this->link);
         return json_decode($JsonDate);
     }
+    
+    
+    
 
 }
